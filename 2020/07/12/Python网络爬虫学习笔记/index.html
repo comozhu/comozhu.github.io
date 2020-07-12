@@ -20,6 +20,7 @@
 <meta property="article:published_time" content="2020-07-12T13:05:34.000Z">
 <meta property="article:modified_time" content="2020-07-12T13:05:34.000Z">
 <meta property="article:author" content="COMO_ZHU">
+<meta property="article:tag" content="爬虫">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://comoz.top/Users/ISEM/Documents/pic_for_md/%E7%88%AC%E8%99%AB%E6%A1%86%E6%9E%B6%E7%BB%93%E6%9E%84.png">
   
@@ -72,7 +73,7 @@ var _hmt = _hmt || [];
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/categories">归档</a></li>
+				<li><a href="/categories">归类</a></li>
 	        
 			</ul>
 		</nav>
@@ -140,7 +141,7 @@ var _hmt = _hmt || [];
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/categories">归档</a></li>
+					<li style="width: 50%"><a href="/categories">归类</a></li>
 		        
 				</ul>
 			</nav>
@@ -187,6 +188,8 @@ var _hmt = _hmt || [];
 <li>r.content 响应内容的二进制形式</li>
 </ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">r = requests.get(<span class="string">"url"</span>)</span><br><span class="line">r.status_code</span><br><span class="line">r.text</span><br><span class="line">r.encoding</span><br><span class="line">r.apparent_encoding</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
 
 
 
@@ -780,6 +783,17 @@ var _hmt = _hmt || [];
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">爬虫</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 	<div class="article-category tagcloud">
 		<i class="icon-book icon"></i>
@@ -963,6 +977,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">爬虫</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>
