@@ -152,6 +152,677 @@ var _hmt = _hmt || [];
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Python网络爬虫学习笔记" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/07/12/Python%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">Python网络爬虫学习笔记</a>
+    </h1>
+  
+
+        
+        <a href="/2020/07/12/Python%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="archive-article-date">
+  	<time datetime="2020-07-12T13:05:34.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-07-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>[TOC]</p>
+<h1 id="Python-网络爬虫学习"><a href="#Python-网络爬虫学习" class="headerlink" title="Python 网络爬虫学习"></a>Python 网络爬虫学习</h1><blockquote>
+<p>资料：北京理工大学 嵩天老师 Python网络爬虫与信息提取 </p>
+<p>目标：实现一个网络爬虫</p>
+</blockquote>
+<h2 id="Response对象"><a href="#Response对象" class="headerlink" title="Response对象"></a>Response对象</h2><ul>
+<li>r.status_code     请求返回状态，200为成功</li>
+<li>r.text 响应内容的字符串形式</li>
+<li>r.encoding 从header猜测的内容编码方式  【charset字段】</li>
+<li>r.apparent_encoding 从响应内容猜测的内容编码方式</li>
+<li>r.content 响应内容的二进制形式</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">r = requests.get(<span class="string">"url"</span>)</span><br><span class="line">r.status_code</span><br><span class="line">r.text</span><br><span class="line">r.encoding</span><br><span class="line">r.apparent_encoding</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="爬网页通用代码框架"><a href="#爬网页通用代码框架" class="headerlink" title="爬网页通用代码框架"></a>爬网页通用代码框架</h2><h3 id="Requests库异常"><a href="#Requests库异常" class="headerlink" title="Requests库异常"></a>Requests库异常</h3><ul>
+<li>ConnectionError</li>
+<li>HTTPError</li>
+<li>URLRequried</li>
+<li>TooManyRedirects</li>
+<li>ConnectTimeout</li>
+<li>Timeout</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">r.raise_for_status()<span class="comment">##判断返回状态是否200</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="通用代码框架"><a href="#通用代码框架" class="headerlink" title="通用代码框架"></a>通用代码框架</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getHTMLText</span><span class="params">(url)</span>:</span></span><br><span class="line">		<span class="keyword">try</span>:</span><br><span class="line">      r = request.get(url,timeout=<span class="number">30</span>)</span><br><span class="line">      r.raise_for_status() <span class="comment">##判断是否200，否则返回异常</span></span><br><span class="line">      r.encoding  = r.apparent_encoding</span><br><span class="line">      <span class="keyword">return</span> r.text</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="string">"产生异常"</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="HTTP协议"><a href="#HTTP协议" class="headerlink" title="HTTP协议"></a>HTTP协议</h2><h3 id="HTTP-URL"><a href="#HTTP-URL" class="headerlink" title="HTTP URL"></a>HTTP URL</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://host.[端口][路径] ## 定位</span><br></pre></td></tr></table></figure>
+
+<h3 id="HTTP方法"><a href="#HTTP方法" class="headerlink" title="HTTP方法"></a>HTTP方法</h3><p>与Requests库方法一一对应</p>
+<ul>
+<li>get</li>
+<li>head</li>
+<li>post 后加</li>
+<li>put 全覆盖</li>
+<li>patch 修改</li>
+<li>delete </li>
+</ul>
+<h2 id="Requests"><a href="#Requests" class="headerlink" title="Requests"></a>Requests</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">requests.request(method,url,**kwargs)</span><br></pre></td></tr></table></figure>
+
+<h3 id="13个控制参数"><a href="#13个控制参数" class="headerlink" title="13个控制参数"></a>13个控制参数</h3><ul>
+<li>params  修改 URL</li>
+<li>data 向服务器提交资源</li>
+<li>json  JSON格式的数据，作为内容向服务器提交</li>
+<li>==headers  HTTP协议头定制==</li>
+<li>cookies</li>
+<li>auth</li>
+<li>files</li>
+<li>timeout 设定超时事件，秒为单位</li>
+<li>==proxies 设置访问代理 可以添加账号密码==</li>
+<li>allow_redirects</li>
+<li>stream</li>
+<li>verify</li>
+<li>cert</li>
+</ul>
+<blockquote>
+<p>其他基于request的方法，其控制访问参数与request一致，仅部分为显式定义</p>
+<p>基于网络安全，使用Requests库，重点掌握get 、head</p>
+</blockquote>
+<h2 id="网络爬虫问题"><a href="#网络爬虫问题" class="headerlink" title="网络爬虫问题"></a>网络爬虫问题</h2><h3 id="爬虫规模"><a href="#爬虫规模" class="headerlink" title="爬虫规模"></a>爬虫规模</h3><ul>
+<li>爬网页 Requests库 小规模，数据不敏感</li>
+<li>爬网站 Scrapy库     中规模</li>
+<li>爬全网</li>
+</ul>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ul>
+<li>网络骚扰 服务器响应能力 尤其是低劣编写的爬虫</li>
+<li>法律风险  有产权归属的数据</li>
+<li>隐私泄漏 突破访问控制，获取个人隐私</li>
+</ul>
+<h3 id="网络爬虫规范限制"><a href="#网络爬虫规范限制" class="headerlink" title="网络爬虫规范限制"></a>网络爬虫规范限制</h3><ul>
+<li><p>来源审查 HTTP协议头审查</p>
+</li>
+<li><p>公告 robots协议 可爬取策略 </p>
+<ul>
+<li><p>在网站根目录下放置robots.txt 文件</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">http://www.jd.com/robots.txt</span><br><span class="line"></span><br><span class="line">## / 网站根目录  * 所有</span><br><span class="line"></span><br><span class="line">User-agent: * ##以通配符讲解有哪些不准</span><br><span class="line">Disallow: /?* </span><br><span class="line">Disallow: /pop/*.html </span><br><span class="line">Disallow: /pinpai/*.html?* </span><br><span class="line">User-agent: EtaoSpider ## 4个恶意爬虫被封禁</span><br><span class="line">Disallow: / </span><br><span class="line">User-agent: HuihuiSpider </span><br><span class="line">Disallow: / </span><br><span class="line">User-agent: GwdangSpider </span><br><span class="line">Disallow: / </span><br><span class="line">User-agent: WochachaSpider </span><br><span class="line">Disallow: /</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>如果如robots.txt文件，则表明其允许所有爬虫无限制爬取</p>
+</blockquote>
+<h3 id="遵守robots协议"><a href="#遵守robots协议" class="headerlink" title="遵守robots协议"></a>遵守robots协议</h3><ul>
+<li>爬虫应自动或人工了解robots协议</li>
+<li>类人类获取，如访问次数很少，占用服务器资源很少，可不遵守协议</li>
+<li>其他一般遵守</li>
+</ul>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><h3 id="1-京东商品页面爬取"><a href="#1-京东商品页面爬取" class="headerlink" title="1.京东商品页面爬取"></a>1.京东商品页面爬取</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">r = requests.get(<span class="string">"https://item.jd.com/100012099216.html"</span>)</span><br><span class="line">r.status_code</span><br><span class="line">r.encoding</span><br><span class="line">r.text</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">url = <span class="string">"https://item.jd.com/100012099216.html"</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">  r = requests.get(url)</span><br><span class="line">  r.raise_for_status（）</span><br><span class="line">  r.encoding = r.apparent_encoing</span><br><span class="line">  print(r.text[:<span class="number">1000</span>])</span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">  print(<span class="string">"爬取失败"</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-亚马逊商品页面爬取"><a href="#2-亚马逊商品页面爬取" class="headerlink" title="2.亚马逊商品页面爬取"></a>2.亚马逊商品页面爬取</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">r = requests.get(<span class="string">"https://www.amazon.cn/dp/B0854VDX1H?ref_=Oct_DLandingS_D_41fad3da_60&amp;smid=A3CQWPW49OI3BQ"</span>) </span><br><span class="line">r.status_code</span><br><span class="line"></span><br><span class="line">r.requests.headers <span class="comment">##来源审查 自动排除爬虫 </span></span><br><span class="line"><span class="comment">## Response对象包含发出的HTTP协议</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kv = &#123;<span class="string">'user-agent'</span>:<span class="string">'Mozilla/5.0‘&#125; ##模拟用户代理</span></span><br><span class="line"><span class="string">url = "https://www.amazon.cn/dp/B0854VDX1H?ref_=Oct_DLandingS_D_41fad3da_60&amp;smid=A3CQWPW49OI3BQ"</span></span><br><span class="line"><span class="string">r = requests.get(url,headers = kv)</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">url = <span class="string">"https://www.amazon.cn/dp/B0854VDX1H?ref_=Oct_DLandingS_D_41fad3da_60&amp;smid=A3CQWPW49OI3BQ"</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">  r = requests.get(url,headers=kv)</span><br><span class="line">  r.raise_for_status（）</span><br><span class="line">  r.encoding=r.apparent_encoding</span><br><span class="line">  print(r.text[<span class="number">1000</span>:<span class="number">2000</span>])</span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">  print(<span class="string">"爬取错误"</span>)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-百度360搜索关键词提交"><a href="#3-百度360搜索关键词提交" class="headerlink" title="3.百度360搜索关键词提交"></a>3.百度360搜索关键词提交</h3><p> 关键词接口</p>
+<blockquote>
+<p><a href="http://www.baidu.com/s?wd=" target="_blank" rel="noopener">http://www.baidu.com/s?wd=</a> ==keyword==</p>
+<p><a href="http://www.so.com/s?q=" target="_blank" rel="noopener">http://www.so.com/s?q=</a> ==keyword==</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">kv = &#123;<span class="string">'wd'</span>:<span class="string">'python'</span>&#125;</span><br><span class="line">r = requests.get(<span class="string">"http://www.baidu.com/s"</span>,params=kv)</span><br><span class="line">r.status_code</span><br><span class="line">r.request.url <span class="comment">##查看发出的URL</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">kv = &#123;<span class="string">'q'</span>:<span class="string">'python'</span>&#125;</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">  r = requests.get(<span class="string">"http://www.so.com/s"</span>,params=kv)</span><br><span class="line">  r.raise_for_status()</span><br><span class="line">  print(r.request.url)</span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">  print(<span class="string">"爬取失败"</span>)</span><br><span class="line">  </span><br><span class="line"><span class="comment">## 当使用return时报错</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-网络图片爬取与存储"><a href="#4-网络图片爬取与存储" class="headerlink" title="4.网络图片爬取与存储"></a>4.网络图片爬取与存储</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">path = <span class="string">"/Users/ISEM/Desktop/ab.jpg"</span> <span class="comment">##用于存储图片的本地位置</span></span><br><span class="line">url=<span class="string">"http://img0.dili360.com/pic/2020/05/14/5ebd1c27d020d6q57793231_t.jpg@!rw9"</span></span><br><span class="line">r = requests.get(url)</span><br><span class="line">r.status_code</span><br><span class="line"><span class="keyword">with</span> open(path,<span class="string">'wb'</span>) <span class="keyword">as</span> f:</span><br><span class="line">  f.write(r.content)</span><br><span class="line">f.close()</span><br></pre></td></tr></table></figure>
+
+<p>![image-20200604230026881](/Users/ISEM/Library/Application Support/typora-user-images/image-20200604230026881.png)</p>
+<blockquote>
+<p>工程上要求代码稳健，怎么运行都不会错</p>
+</blockquote>
+<h3 id="5-IP地址归属地查询"><a href="#5-IP地址归属地查询" class="headerlink" title="5.IP地址归属地查询"></a>5.IP地址归属地查询</h3><blockquote>
+<p>需要一个IP地址库</p>
+<p>ip138 ip地址查询</p>
+<p><a href="http://m.ip138.com/ip.asp?ip=" target="_blank" rel="noopener">http://m.ip138.com/ip.asp?ip=</a> ==ipaddress==</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">url = <span class="string">"http://m.ip138.com/ip.asp?ip="</span> <span class="comment">## 注意上述写法，与之前的不同，没有使用字典</span></span><br><span class="line">r = requests.get(url+<span class="string">'202.204.80.112'</span>)</span><br><span class="line">r.status_code</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">url = <span class="string">"http://m.ip138.com/ip.asp?ip="</span> </span><br><span class="line">ip  = <span class="string">'202.204.80.112'</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">  r = requests.get(url+ip)</span><br><span class="line">  r.raise_for_status()</span><br><span class="line">  r.encoding=r.apparent_encoding</span><br><span class="line">  print(r.text[<span class="number">-500</span>:])</span><br><span class="line"> <span class="keyword">except</span>:</span><br><span class="line">  print(<span class="string">"查询失败"</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>我们所见的点击、输入最终是以URL的形式向后台提交</p>
+<p>只要我们知道向后台提交的形式，我们就可以模拟人机交互</p>
+<p>理解网络爬虫的视角 URL</p>
+<p>HTTP协议两大重点：定位URL </p>
+</blockquote>
+<h2 id="解析HTML页面"><a href="#解析HTML页面" class="headerlink" title="解析HTML页面"></a>解析HTML页面</h2><blockquote>
+<p>前面讲解自动爬取网页，下面就是自动解析页面</p>
+</blockquote>
+<h3 id="Beautiful-Soup"><a href="#Beautiful-Soup" class="headerlink" title="Beautiful Soup"></a>Beautiful Soup</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup <span class="comment">##下载BeautifulSoup4库，后使用简写bs4；导入BeautifulSoup 类</span></span><br><span class="line">soup = BeautifulSoup(<span class="string">'&lt;p&gt;data&lt;/p&gt;'</span>,<span class="string">'html.parser'</span>) <span class="comment">##前为解析内容，即HTML格式内容，后为HTML解析器指定</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>问题：经过bs解析的内容与之前从网站上直接爬取并存储下来的页面内容有什么区别？</p>
+<p>简单观察：看打印输出，bs的输出更有格式，text的输出混在一起</p>
+</blockquote>
+<blockquote>
+<p>小尝试：假如把爬取下来的图片直接text，会是什么内容、什么编码</p>
+</blockquote>
+<ul>
+<li>bs是解析、遍历、维护“标签树”的功能库，所以只要是标签都可以解析</li>
+<li>基本格式  <code>&lt; name attri（键值对）&gt;...&lt; /name &gt;</code></li>
+<li><code>from bs4 import BeautifulSoup</code>  or <code>import bs4</code></li>
+<li>转化过程 HTML文档 = 标签树 = BeatifulSoup类</li>
+<li>解析器 html.parser  lxml xml html5lib </li>
+<li>==基本元素==<ul>
+<li>tag   类&lt; p&gt;&lt; /p&gt;  标签皆可以通过<code>soup.tag</code>获得  </li>
+<li>name   <code>.name</code></li>
+<li>attrs <code>.attrs</code></li>
+<li>NavigableString  标签内非属性字符串  <code>.string</code> </li>
+<li>comment  标签内字符串的注释部分 <code>&lt;!--...--&gt;</code></li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>获取标签树内各部分内容的方法如上</p>
+<p>标签、标签的name、属性、内部字符串string、注释</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line">url = <span class="string">"http://python123.io/ws/demo.html"</span></span><br><span class="line">r = requests.get(url)</span><br><span class="line">demo = r.text <span class="comment">## 直接用r,报错Response类没有len；demo为string类</span></span><br><span class="line">soup = BeautifulSoup(demo,<span class="string">'html.parser'</span>)</span><br><span class="line">soup.a</span><br><span class="line">soup.a.name</span><br><span class="line">soup.a.parent.name</span><br><span class="line">soup.a.attrs</span><br><span class="line">soup.a.attrs[] <span class="comment">## 字典式访问</span></span><br><span class="line">soup.a.string</span><br></pre></td></tr></table></figure>
+
+<h3 id="遍历"><a href="#遍历" class="headerlink" title="遍历"></a>遍历</h3><p>![image-20200607103223257](/Users/ISEM/Library/Application Support/typora-user-images/image-20200607103223257.png)</p>
+<ul>
+<li>上行遍历</li>
+<li>下行遍历</li>
+<li>平行遍历</li>
+</ul>
+<blockquote>
+<p>==下行遍历==</p>
+<p>.contents   获取所有子节点，返回列表</p>
+<p>.children    遍历获取子节点(迭代)</p>
+<p>.descendens  遍历获取子孙节点</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> child <span class="keyword">in</span> soup.body.children:</span><br><span class="line">  print(child)</span><br><span class="line"><span class="keyword">for</span> child <span class="keyword">in</span> soup.body.descendans:</span><br><span class="line">  print(child)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>==上行遍历==</p>
+<p>.parent 节点的父亲标签</p>
+<p>.parents 节点的先辈标签，迭代类型</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">soup.html.parent <span class="comment">## html为最上级标签，它的父亲是它自己</span></span><br><span class="line">soup.parent <span class="comment">##为空</span></span><br><span class="line"><span class="keyword">for</span> parent <span class="keyword">in</span> soup.a.parents:</span><br><span class="line">  <span class="keyword">if</span> parent <span class="keyword">is</span> <span class="literal">None</span>:   <span class="comment">##在遍历中会遍历到soup本身，但soup没有先辈，无法打印标签名</span></span><br><span class="line">    print(parent)   <span class="comment">##假如在下面也直接打印parent，会打印出什么？？</span></span><br><span class="line">  <span class="keyword">else</span>:             <span class="comment">##可以打印，但打印的是全部标签内容</span></span><br><span class="line">    print(parent.name)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>==平行遍历==</p>
+<p>.next_sibling 按文本顺序的下一个平行节点</p>
+<p>.previous_sibling 按文本顺序上一个平行节点</p>
+<p>.next_siblings 对应迭代类型，后续所有节点</p>
+<p>.previous_siblings 对应迭代类型 ，前序所有节点</p>
+<p>==所有平行遍历发生在一个父亲节点下，不在一个父亲节点下，不构成平行遍历关系==</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">soup.a.next_sibling <span class="comment">## navigable string 同样被视为节点，因而在平行标签、子标签中可能出现</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>非迭代类型的，都可以这样做   soup.a.next_sibling.next_sibling…</p>
+</blockquote>
+<p>![image-20200607110116721](/Users/ISEM/Library/Application Support/typora-user-images/image-20200607110116721.png)</p>
+<h3 id="基于bs4库的HTML输出"><a href="#基于bs4库的HTML输出" class="headerlink" title="基于bs4库的HTML输出"></a>基于bs4库的HTML输出</h3><blockquote>
+<p>使得html内容更友好显示</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">soup.prettify()  <span class="comment">## 加入了换行符</span></span><br><span class="line">print(soup.prettify())</span><br><span class="line">print(soup.a.prettify()) <span class="comment">## 对标签使用</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="信息标记"><a href="#信息标记" class="headerlink" title="信息标记"></a>信息标记</h2><blockquote>
+<p>与信息一样重要</p>
+<p>帮助人类、程序理解、运用信息</p>
+</blockquote>
+<ul>
+<li>XML</li>
+</ul>
+<blockquote>
+<p>基于HTML</p>
+<p>&lt; name&gt;…&lt; /name&gt;</p>
+<p>&lt; name /&gt;</p>
+<!--   -->
+</blockquote>
+<ul>
+<li>JSON</li>
+</ul>
+<blockquote>
+<p>有类型的键值对，键即类型</p>
+<p>”name“：”北京理工大学“</p>
+<p>”name“：[”北京理工大学“，“延安自然科学院”]</p>
+<p>”name“：{“newname”:”北京理工大学“, “oldname”:”延安自然科学院”}</p>
+<p>==注意引号的使用，为字符串；无注释==</p>
+</blockquote>
+<ul>
+<li>YAML</li>
+</ul>
+<blockquote>
+<p>无类型的键值对（无引号）</p>
+</blockquote>
+<blockquote>
+<p>key: value</p>
+<p>key: #comment</p>
+</blockquote>
+<blockquote>
+<p>- 表并列</p>
+<p>key:</p>
+<p>- value1</p>
+<p>- value2</p>
+</blockquote>
+<blockquote>
+<p>缩进嵌套表所属关系</p>
+<p>key:</p>
+<p>​    subkey: subvalue</p>
+</blockquote>
+<h2 id="信息提取"><a href="#信息提取" class="headerlink" title="信息提取"></a>信息提取</h2><h3 id="方法"><a href="#方法" class="headerlink" title="==方法=="></a>==方法==</h3><ul>
+<li>完整解析信息标记形式，再提取关键信息  标记解析器</li>
+<li>无视标记形式，直接搜索关键信息    查找函数</li>
+<li>融合方法  结合形式解析与搜索</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> link <span class="keyword">in</span> soup.find_all(<span class="string">'a'</span>):</span><br><span class="line">  print(link.get(<span class="string">'href'</span>))  <span class="comment">## 这里采用了get函数，对标签用get函数是什么意思</span></span><br><span class="line">  </span><br><span class="line"><span class="comment">## 按照我会的方式，应该是link['href'],属性为字典方式存储，直接按照字典方式取用</span></span><br><span class="line"><span class="keyword">for</span> link <span class="keyword">in</span> soup.find_all(<span class="string">'a'</span>):</span><br><span class="line">  print(link[<span class="string">'href'</span>])</span><br></pre></td></tr></table></figure>
+
+<h2 id="基于bs4的HTML内容检索"><a href="#基于bs4的HTML内容检索" class="headerlink" title="基于bs4的HTML内容检索"></a>基于bs4的HTML内容检索</h2><blockquote>
+<p>主要是find_all（）函数的使用</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;tag&gt;.find_all(name,attrs,string,recrusive)  <span class="comment">##返回列表格式</span></span><br><span class="line">name 对标签名的检索</span><br><span class="line">attrs 对属性的检索</span><br><span class="line">soup.find_all(string=<span class="string">'Basic Python'</span>) <span class="comment">##对字符串的检索必须精确才能检索到，否则为空</span></span><br><span class="line">soup.find_all(string=re.compile(<span class="string">'python'</span>))<span class="comment">##正则表达式</span></span><br><span class="line">soup.find_all(<span class="string">'a'</span>,recursive=<span class="literal">False</span>) <span class="comment">##recursive 是否检索所有子孙节点，默认为True,False则只检索子节点</span></span><br><span class="line"></span><br><span class="line"><span class="comment">##与正则表达式同用</span></span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line">re.complie(<span class="string">'text'</span>) <span class="comment">##检索所有包含text（任意形式）字段的字符串</span></span><br><span class="line"></span><br><span class="line"><span class="comment">##简略使用</span></span><br><span class="line">&lt;tag&gt;()  == &lt;tag&gt;.find_all()</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>扩展方法 </p>
+<p>参数同find_all()</p>
+<p>&lt;&gt;.find（） 只返回一个结果，字符串类型</p>
+<p>&lt;&gt;.find_parent（）</p>
+<p>&lt;&gt;.find_next_sibling（）</p>
+<p>&lt;&gt;.find_previous_sibling（）</p>
+<p>&lt;&gt;.find_parents（）先辈节点中搜索，返回列表类型</p>
+<p>&lt;&gt;.find_next_siblings（）</p>
+<p>&lt;&gt;.find_previous_siblings（）</p>
+</blockquote>
+<h2 id="实例-中国大学排名"><a href="#实例-中国大学排名" class="headerlink" title="实例 中国大学排名"></a>实例 中国大学排名</h2><blockquote>
+<p>定向爬虫仅对给定URL进行爬取，不扩展爬取（扩展爬虫: 从一个URL爬取其他URL）</p>
+<p>需要确定所需信息写在HTML中（非以JS脚本语言写就 非动态）</p>
+<p>robots协议</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getHTMLText</span><span class="params">(url)</span>:</span></span><br><span class="line">  <span class="keyword">try</span>:</span><br><span class="line">    r = requests.get(url,timeout=<span class="number">30</span>)</span><br><span class="line">    r.raise_for_status()</span><br><span class="line">    r.encoding=r.apparent_encoding</span><br><span class="line">    <span class="keyword">return</span> r.text</span><br><span class="line">  <span class="keyword">except</span>:</span><br><span class="line">    print(<span class="string">"爬取错误"</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getUnivlist</span><span class="params">(html)</span>:</span></span><br><span class="line">  <span class="keyword">try</span>:</span><br><span class="line">    soup = BeautifulSoup(r.text,<span class="string">'html.parser'</span>)</span><br><span class="line">    univlist = []</span><br><span class="line">    <span class="keyword">for</span> tr <span class="keyword">in</span> soup.find(<span class="string">'tbody'</span>).children: <span class="comment">##</span></span><br><span class="line">      school = tr.td[<span class="number">0</span>,<span class="number">1</span>,<span class="number">3</span>] <span class="comment">##获得列表中124项</span></span><br><span class="line">      univlist = univlist.append(school)</span><br><span class="line">    <span class="keyword">return</span> univlist </span><br><span class="line">  <span class="keyword">except</span>:</span><br><span class="line">    print(<span class="string">"解析错误"</span>)</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printUnivlist</span><span class="params">(list)</span>:</span></span><br><span class="line">  <span class="keyword">try</span>:</span><br><span class="line">    print(list)</span><br><span class="line">  <span class="keyword">except</span>:</span><br><span class="line">    print(<span class="string">"打印错误"</span>)</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">  html=getHTMLText(url)</span><br><span class="line">  uninfo=getUnivlist(html)</span><br><span class="line">  printUnivlist(uninfo)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">import</span> bs4</span><br><span class="line"></span><br><span class="line"><span class="comment">## 搞清楚函数接口，输入什么输出什么</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getHTMLText</span><span class="params">(url)</span>:</span></span><br><span class="line">  <span class="keyword">try</span>:</span><br><span class="line">    r = requests.get(url,timeout=<span class="number">30</span>)</span><br><span class="line">    r.raise_for_status()</span><br><span class="line">    r.encoding=r.apparent_encoding</span><br><span class="line">    <span class="keyword">return</span> r.text</span><br><span class="line">  <span class="keyword">except</span>:</span><br><span class="line">    <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fillUnivList</span><span class="params">(ulist,html)</span>:</span></span><br><span class="line">  soup = BeautifulSoup(html,<span class="string">'html.parser'</span>)</span><br><span class="line">  <span class="keyword">for</span> tr <span class="keyword">in</span> soup.find(<span class="string">'tbody'</span>).children:</span><br><span class="line">    <span class="keyword">if</span> isinstance(tr,bs4.element.Tag):  <span class="comment">##子节点中存在字符串，过滤字符串，保证为Tag</span></span><br><span class="line">      tds = tr.find_all(<span class="string">'td'</span>)  <span class="comment">##可以简写为tr('td');返回列表类型</span></span><br><span class="line">      ulist.append([tds[<span class="number">0</span>].string,tds[<span class="number">1</span>].string,tds[<span class="number">2</span>].string,tds[<span class="number">3</span>].string]) <span class="comment">##不加string会怎么样；TypeError: unsupported format string passed to Tag.__format__;像上面直接[0,1,3]会怎么样;TypeError: list indices must be integers or slices, not tuple</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printUnivList</span><span class="params">(ulist,num)</span>:</span></span><br><span class="line">  print(<span class="string">"&#123;:^10&#125;\t&#123;:^6&#125;\t&#123;:^10&#125;\t&#123;:^10&#125;"</span>.format(<span class="string">"排名"</span>,<span class="string">"学校"</span>,<span class="string">"总分"</span>,<span class="string">"省市"</span>))</span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> range(num):</span><br><span class="line">    u = ulist[i] <span class="comment">##列表从0开始，range也是从0开始吗;是的</span></span><br><span class="line">    print(<span class="string">"&#123;:^10&#125;\t&#123;:^6&#125;\t&#123;:^10&#125;\t&#123;:^10&#125;"</span>.format(u[<span class="number">0</span>],u[<span class="number">1</span>],u[<span class="number">3</span>],u[<span class="number">2</span>]))</span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">  uinfo = []</span><br><span class="line">  url = <span class="string">'http://www.zuihaodaxue.com/zuihaodaxuepaiming2016.html'</span></span><br><span class="line">  html = getHTMLText(url)</span><br><span class="line">  fillUnivList(uinfo,html)</span><br><span class="line">  printUnivList(uinfo,<span class="number">20</span>) </span><br><span class="line"></span><br><span class="line">main()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##输出显示优化 中文对齐</span></span><br><span class="line"><span class="comment">##中文字符宽度不够，自动英文字符填充</span></span><br><span class="line"></span><br><span class="line">chr(<span class="number">12288</span>)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printUnivList</span><span class="params">(ulist,num)</span>:</span></span><br><span class="line">  tplt = <span class="string">"&#123;0:^10&#125;\t&#123;1:&#123;4&#125;^10&#125;\t&#123;2:^10&#125;\t&#123;3:^10&#125;"</span> <span class="comment">##增加了3号位，以引用后面format的chr（12288）;只在学校的位置填充</span></span><br><span class="line">  print(tplt.format(<span class="string">"排名"</span>,<span class="string">"学校"</span>,<span class="string">"总分"</span>,<span class="string">"省市"</span>,chr(<span class="number">12288</span>)))</span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> range(num):</span><br><span class="line">    u = ulist[i] <span class="comment">##列表从0开始，range也是从0开始吗;是的</span></span><br><span class="line">    print(tplt.format(u[<span class="number">0</span>],u[<span class="number">1</span>],u[<span class="number">3</span>],u[<span class="number">2</span>],chr(<span class="number">12288</span>)))</span><br></pre></td></tr></table></figure>
+
+<h2 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h2><ul>
+<li>通用字符串表达框架</li>
+<li>简洁表达一组字符串的方式</li>
+<li>可用于判断、匹配、查找、替换字符串</li>
+</ul>
+<blockquote>
+<p>编译 </p>
+<p>将符合正则表达式语法的字符串，转化为正则表达式</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p=re.complie(regex)</span><br></pre></td></tr></table></figure>
+
+<h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><blockquote>
+<p>字符+操作符组成</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>说明</th>
+<th>实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>.</td>
+<td>表示任何单个字符</td>
+<td></td>
+</tr>
+<tr>
+<td>[]</td>
+<td>字符集，对单个字符给出取值范围</td>
+<td>[abc]，取值为a或b或c</td>
+</tr>
+<tr>
+<td>[^]</td>
+<td>非字符集，对单个字符给出排除范围</td>
+<td>[^abc]，取值非a或b或c</td>
+</tr>
+<tr>
+<td>*</td>
+<td>前一个字符0次或无限次扩展</td>
+<td>abc* 表示ab,abc,abcc,…</td>
+</tr>
+<tr>
+<td>+</td>
+<td>前一个字符1次或无限次扩展</td>
+<td>abc+ 表示abc,abcc,….</td>
+</tr>
+<tr>
+<td>?</td>
+<td>前一个字符0次或1次扩展</td>
+<td>abc? 表示ab,abc</td>
+</tr>
+<tr>
+<td>|</td>
+<td>左右表达式任一</td>
+<td>abc|def 表示abc或def</td>
+</tr>
+<tr>
+<td>{m}</td>
+<td>扩展前一个字符m次</td>
+<td>ab{2}c 表示abbc</td>
+</tr>
+<tr>
+<td>{m,n}</td>
+<td>扩展前一个字符m到n次（含n）</td>
+<td>ab{1,2}c 表示abc或abbc</td>
+</tr>
+<tr>
+<td>^</td>
+<td>匹配字符串开头</td>
+<td>^abc 表示abc 且在字符串开头</td>
+</tr>
+<tr>
+<td>$</td>
+<td>匹配字符串结尾</td>
+<td>abc$ 表示abc 且在字符串结尾</td>
+</tr>
+<tr>
+<td>()</td>
+<td>分组标记，内部只能用|</td>
+<td>(abc) 表abc (abc|def)表abc或def</td>
+</tr>
+<tr>
+<td>\d</td>
+<td>数字，等价于[0-9]</td>
+<td></td>
+</tr>
+<tr>
+<td>\w</td>
+<td>单词字符等价于[A-Za-z0-9_]</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>![image-20200608163345167](/Users/ISEM/Library/Application Support/typora-user-images/image-20200608163345167.png)</p>
+<h3 id="Re库使用"><a href="#Re库使用" class="headerlink" title="Re库使用"></a>Re库使用</h3><blockquote>
+<p>import re</p>
+<p>正则表达式用raw string类型表示   格式如 r’text’（在前面加上r）</p>
+<p>原生字符串不包含转义符（ \  不被理解为转义符）</p>
+<p>采用string类型，则在表达\时需要 \ \（多一个\）</p>
+</blockquote>
+<p>==主要功能函数==</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th align="left">说明</th>
+<th>参数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>re.search()</td>
+<td align="left">在字符串中搜索匹配正则表达式的第一个匹配项，返回match对象</td>
+<td>pattern,string,flags=0</td>
+</tr>
+<tr>
+<td>re.match()</td>
+<td align="left">从字符串的开始位置匹配正则表达式，返回match对象</td>
+<td>pattern,string,flags=0</td>
+</tr>
+<tr>
+<td>re.findall()</td>
+<td align="left">搜素字符串，以列表类型，返回全部匹配的子串</td>
+<td>pattern,string,flags=0</td>
+</tr>
+<tr>
+<td>re.split()</td>
+<td align="left">将字符串按照正则表达式匹配结果分割，返回列表类型</td>
+<td>pattern,string,maxsplit=0,flags=0</td>
+</tr>
+<tr>
+<td>re.finditer()</td>
+<td align="left">搜索字符串，返回匹配结果的迭代类型，每个迭代对象时match对象</td>
+<td>pattern,string,flags=0</td>
+</tr>
+<tr>
+<td>re.sub()</td>
+<td align="left">在字符串中替换所有匹配正则表达式的子串，返回替换后的字符串</td>
+<td>pattern,repl,string,count=0,flags=0</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>pattern 正则表达式</p>
+<p>string  待匹配字符串</p>
+<p>flags  正则表达式使用时的控制参数</p>
+<blockquote>
+<p>re.I   忽略正则表达式的大小写</p>
+<p>re.M   ^操作符将每行作为开始</p>
+<p>re.S   .可匹配所有字符（默认匹配除换行符以外的所有字符）</p>
+</blockquote>
+<p>maxsplit 最大分割数，剩下所有作为一个</p>
+<p>repl 替换字符串</p>
+<p>count 匹配的最大替换次数</p>
+</blockquote>
+<p>==两种用法==</p>
+<blockquote>
+<p>函数式用法</p>
+<p>rst = re.search()</p>
+</blockquote>
+<blockquote>
+<p>面向对象的用法(先编译，后直接在对象后使用方法)</p>
+<p>pat = ==re.compile==(pattern,flags)</p>
+<p>pat.search()  （可直接使用前面的6个函数）（去掉原来的pattern参数）</p>
+</blockquote>
+<h3 id="match对象"><a href="#match对象" class="headerlink" title="match对象"></a>match对象</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">match = re.search(<span class="string">r'[1-9]\d&#123;5&#125;'</span>,<span class="string">'BIT 100081'</span>)</span><br><span class="line"><span class="keyword">if</span> match: <span class="comment">##if语句判断0、1</span></span><br><span class="line">  print(match.group(<span class="number">0</span>))</span><br><span class="line"></span><br><span class="line">type(match)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>==match的属性==</p>
+<p>match.string 待匹配文本</p>
+<p>.re 匹配时使用的正则表达式</p>
+<p>.pos 正则表达式搜索开始位置</p>
+<p>.endpos 正则表达式搜索结束位置</p>
+</blockquote>
+<blockquote>
+<p>==match的方法==</p>
+<p>.group（0） 获得匹配后的字符串 （还有group（1）group（2）等）</p>
+<p>.start()  匹配字符串在原字符串的开始位置</p>
+<p>.end()   匹配字符串在原字符串的结束位置</p>
+<p>.span()  返回（.start(),.end()）</p>
+</blockquote>
+<h3 id="贪婪匹配"><a href="#贪婪匹配" class="headerlink" title="贪婪匹配"></a>贪婪匹配</h3><blockquote>
+<p>re的匹配必然返回最长的字符串</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">match = re.search(<span class="string">r'PY.*N'</span>,<span class="string">'PYANBNCNDN'</span>) <span class="comment">##存在多个匹配项时，返回最长的匹配项</span></span><br><span class="line">match.group(<span class="number">0</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>最小匹配 (操作符后加？)</p>
+<p>*?</p>
+<p>+?</p>
+<p>??</p>
+<p>{m,n}?</p>
+</blockquote>
+<h2 id="实例-淘宝商品信息定向爬虫"><a href="#实例-淘宝商品信息定向爬虫" class="headerlink" title="实例 淘宝商品信息定向爬虫"></a>实例 淘宝商品信息定向爬虫</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getHTMLText</span><span class="params">(url)</span>:</span><span class="comment">##通用框架</span></span><br><span class="line">		<span class="keyword">try</span>:</span><br><span class="line">      r = request.get(url,timeout=<span class="number">30</span>)</span><br><span class="line">      r.raise_for_status() </span><br><span class="line">      r.encoding  = r.apparent_encoding</span><br><span class="line">      <span class="keyword">return</span> r.text</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="string">""</span>	</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">parsHTML</span><span class="params">(ilt,html)</span>:</span></span><br><span class="line">  	<span class="keyword">try</span>:</span><br><span class="line">      plt = re.findall(<span class="string">r'\"view_price\"\:\"[\d\.]*\"'</span>,html) <span class="comment">##以正则表达式直接检索view_price信息</span></span><br><span class="line">      tlt = re.findall(<span class="string">r'\"raw_title\"\:\".*?\"'</span>, html) <span class="comment">## *?为最小匹配，保证了.*?"匹配到第一个引号就结束</span></span><br><span class="line">      <span class="keyword">for</span> i <span class="keyword">in</span> range(len(plt)):</span><br><span class="line">        price = eval(plt[i].split(<span class="string">':'</span>)[<span class="number">1</span>])</span><br><span class="line">        title = eval(tlt[i].split(<span class="string">':'</span>)[<span class="number">1</span>])</span><br><span class="line">        ilt.append([price,title])</span><br><span class="line">     <span class="keyword">except</span>: <span class="comment">## try 结构避免程序运行出错</span></span><br><span class="line">      print(<span class="string">""</span>) </span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">printGoodsList</span><span class="params">(ilt)</span>:</span></span><br><span class="line">  tplt = <span class="string">"&#123;:4&#125;\t&#123;:8&#125;\t&#123;:16&#125;"</span> <span class="comment">##表头设计</span></span><br><span class="line">  print(tplt.format(<span class="string">"序号"</span>，<span class="string">"价格"</span>，<span class="string">"商品名称"</span>))</span><br><span class="line">  count = <span class="number">0</span> </span><br><span class="line">  <span class="keyword">for</span> g <span class="keyword">in</span> ilt:</span><br><span class="line">    count = count + <span class="number">1</span></span><br><span class="line">    print(tplt.format(count,g[<span class="number">0</span>],g[<span class="number">1</span>]))</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">  	goods = <span class="string">'书包'</span></span><br><span class="line">    depth = <span class="number">2</span></span><br><span class="line">    start_url = <span class="string">'https://s.taobao.com/search?q='</span> + goods </span><br><span class="line">    infoList = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(depth):</span><br><span class="line">      <span class="keyword">try</span>:  <span class="comment">##有意思的是，对于多个页面的爬取不是在提取页面中设置的，而是在主函数中，以循环方式每次调用简单的爬取</span></span><br><span class="line">        url = start_url + <span class="string">'&amp;s='</span> + string(<span class="number">44</span>*i)</span><br><span class="line">        html = getHTMLText(url)</span><br><span class="line">        parsHTML(infoList,html)</span><br><span class="line">      <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">continue</span>  <span class="comment">##出现异常跳过本次循环，直接进入下一个循环</span></span><br><span class="line">    printGoodsList(infoList)</span><br></pre></td></tr></table></figure>
+
+<h2 id="实例-股票数据定向爬虫"><a href="#实例-股票数据定向爬虫" class="headerlink" title="实例 股票数据定向爬虫"></a>实例 股票数据定向爬虫</h2><blockquote>
+<p>股票信息静态存储与HTML页面，非js代码动态生成，无robots协议限制</p>
+</blockquote>
+<blockquote>
+<ol>
+<li><p>获取股票列表</p>
+</li>
+<li><p>根据股票列表获取个股信息</p>
+</li>
+<li><p>汇总个股信息并呈现</p>
+</li>
+</ol>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">import</span> Traceback <span class="comment">##用于调试</span></span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getHTMLText</span><span class="params">(url)</span>:</span><span class="comment">##通用框架</span></span><br><span class="line">		<span class="keyword">try</span>:</span><br><span class="line">      r = request.get(url,timeout=<span class="number">30</span>)</span><br><span class="line">      r.raise_for_status() </span><br><span class="line">      r.encoding  = r.apparent_encoding</span><br><span class="line">      <span class="keyword">return</span> r.text</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="string">""</span>	</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getStockList</span><span class="params">(lst,stockURL)</span>:</span></span><br><span class="line">  html = getHTMLText(stockURL)</span><br><span class="line">  soup = BeautifulSoup(html,<span class="string">'html.parser'</span>)</span><br><span class="line">  a = soup.find_all(<span class="string">'a'</span>)</span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> a :</span><br><span class="line">    <span class="keyword">try</span>: <span class="comment">## 注意此处try 的使用，保证了假如出错，则很可能不是我们需要的数据，这样自动排除，还不会影响程序运行</span></span><br><span class="line">      href = i.attrs[<span class="string">'href'</span>]</span><br><span class="line">      lst.appned(re.findall(<span class="string">r'[s][hz]\d&#123;6&#125;'</span>,href)[<span class="number">0</span>])<span class="comment">## findall 返回列表，这里可以使用search，就不需要序号了</span></span><br><span class="line">     <span class="keyword">except</span>:</span><br><span class="line">      <span class="keyword">continue</span></span><br><span class="line">  </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getStockInfo</span><span class="params">(lst,stockURL,path)</span>:</span></span><br><span class="line">  count = <span class="number">0</span></span><br><span class="line">  <span class="keyword">for</span> stock <span class="keyword">in</span> lst:</span><br><span class="line">    url = stockURL + stock + <span class="string">".html"</span></span><br><span class="line">    html = getHTMLText(url)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">      <span class="keyword">if</span> html == <span class="string">""</span>:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">      infoDict = &#123;&#125;</span><br><span class="line">      soup = BeautifulSoup(html,<span class="string">'html.paeser'</span>)</span><br><span class="line">      stockInfo = soup.find(<span class="string">'div'</span>,attrs=&#123;<span class="string">'class'</span>:<span class="string">'stock-bets'</span>&#125;)</span><br><span class="line">      name = stockInfo.find_all(attrs=&#123;<span class="string">'class'</span>:<span class="string">'bet-names'</span>&#125;)[<span class="number">0</span>]</span><br><span class="line">      infoDict.update(&#123;<span class="string">'股票名称'</span>：name.text.split()[<span class="number">0</span>])</span><br><span class="line">      keylist = stockInfo.find_all(<span class="string">'dt'</span>)</span><br><span class="line">      valuelist = stockInfo.find_all(<span class="string">'dd'</span>)</span><br><span class="line">      <span class="keyword">for</span> i <span class="keyword">in</span> range(len(keylist)):</span><br><span class="line">                       key = keylist[i].text</span><br><span class="line">                       val = valuelist[i].text</span><br><span class="line">                       infoDict[key] = val</span><br><span class="line">      <span class="keyword">with</span> open(fpath,<span class="string">'a'</span>,encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">                       f.write(str(infoDict)+<span class="string">'\n'</span>)</span><br><span class="line">                      </span><br><span class="line">   <span class="keyword">except</span>:</span><br><span class="line">         traceback.print_exc()</span><br><span class="line">         <span class="keyword">continue</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">        stock_list_url = <span class="string">'http//quote.eastmoney.com/stocklist.html'</span></span><br><span class="line">        stock_info_url = <span class="string">'https://gupiao.baidu.com/stock/'</span></span><br><span class="line">        output = <span class="string">'/Users/ISEM/Desktop/stock.txt'</span></span><br><span class="line">        slist = []</span><br><span class="line">        getStockList(slist,stock_list_url)</span><br><span class="line">        getStockInfo(slist,stock_info_url,output)</span><br><span class="line">                       </span><br><span class="line"></span><br><span class="line"><span class="comment">## 进度显示</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getStockInfo</span><span class="params">(lst,stockURL,path)</span>:</span></span><br><span class="line">  count = <span class="number">0</span></span><br><span class="line">  <span class="keyword">for</span> stock <span class="keyword">in</span> lst:</span><br><span class="line">    url = stockURL + stock + <span class="string">".html"</span></span><br><span class="line">    html = getHTMLText(url)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">      <span class="keyword">if</span> html == <span class="string">""</span>:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">      infoDict = &#123;&#125;</span><br><span class="line">      soup = BeautifulSoup(html,<span class="string">'html.paeser'</span>)</span><br><span class="line">      stockInfo = soup.find(<span class="string">'div'</span>,attrs=&#123;<span class="string">'class'</span>:<span class="string">'stock-bets'</span>&#125;)</span><br><span class="line">      name = stockInfo.find_all(attrs=&#123;<span class="string">'class'</span>:<span class="string">'bet-names'</span>&#125;)[<span class="number">0</span>]</span><br><span class="line">      infoDict.update(&#123;<span class="string">'股票名称'</span>：name.text.split()[<span class="number">0</span>]) <span class="comment">##按照字典的更新方式，应该可以 infoDict['股票名称']= name.text.split()[0];update方法将新字典添到指定字典中</span></span><br><span class="line">      keylist = stockInfo.find_all(<span class="string">'dt'</span>)</span><br><span class="line">      valuelist = stockInfo.find_all(<span class="string">'dd'</span>)</span><br><span class="line">      <span class="keyword">for</span> i <span class="keyword">in</span> range(len(keylist)):</span><br><span class="line">                       key = keylist[i].text</span><br><span class="line">                       val = valuelist[i].text</span><br><span class="line">                       infoDict[key] = val</span><br><span class="line">      <span class="keyword">with</span> open(fpath,<span class="string">'a'</span>,encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">                       f.write(str(infoDict)+<span class="string">'\n'</span>)</span><br><span class="line">                        count = count + <span class="number">1</span>  <span class="comment">##\r 光标移到头部</span></span><br><span class="line">                       print(<span class="string">'\r当前速度：&#123;:.2f&#125;%'</span>.format(count*<span class="number">100</span>/len(lst)),end =<span class="string">''</span>)</span><br><span class="line">   <span class="keyword">except</span>:</span><br><span class="line">          count = count + <span class="number">1</span>  <span class="comment">##\r 光标移到头部</span></span><br><span class="line">                       print(<span class="string">'\r当前速度：&#123;:.2f&#125;%'</span>.format(count*<span class="number">100</span>/len(lst)),end =<span class="string">''</span>)<span class="comment">##\r在IDLE中被禁用</span></span><br><span class="line">         <span class="keyword">continue</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">##format格式化字符串 常用</span></span><br><span class="line">&#123;:<span class="number">.2</span>f&#125; <span class="comment">##保留两位小数</span></span><br><span class="line">&#123;:&lt;<span class="number">10</span>d&#125;<span class="comment">##左对齐，宽度10</span></span><br><span class="line">&#123;:&gt;<span class="number">10</span>d&#125;<span class="comment">##右对齐，宽度10</span></span><br><span class="line">&#123;:^<span class="number">10</span>d&#125;<span class="comment">##中间对齐，宽度10</span></span><br><span class="line">&#123;:<span class="number">.2</span>%&#125;<span class="comment">##百分比格式</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Scrapy"><a href="#Scrapy" class="headerlink" title="Scrapy"></a>Scrapy</h2><blockquote>
+<p>网络爬虫框架，不是一个简单的函数功能库</p>
+<p>爬虫框架，实现爬虫功能的软件结构与功能组件集合</p>
+<p>半成品，三个模块以及剩下两个模块的模版已经提供，只需在模版基础上配置</p>
+</blockquote>
+<h3 id="5-2-模块"><a href="#5-2-模块" class="headerlink" title="==5+2==模块"></a>==5+2==模块</h3><ul>
+<li>ENGINE<ul>
+<li>控制模块间的数据流</li>
+<li>根据条件触发事件</li>
+</ul>
+</li>
+<li>==SPIDERS== （Request 最初的发出地）<ul>
+<li>解析Downloader 返回的响应 （Response）</li>
+<li>产生爬取项 (Item)</li>
+<li>产生额外的爬取请求 (Request)</li>
+</ul>
+</li>
+<li>DOWNLOADER<ul>
+<li>根据请求下载网页</li>
+</ul>
+</li>
+<li>==ITEM PIPELINES==<ul>
+<li>以流水线处理spider产生的爬取项</li>
+</ul>
+</li>
+<li>SCHEDULER <ul>
+<li>调度爬取请求</li>
+</ul>
+</li>
+<li>ENGINE与SPIDERS、DOWNLOADER之间存在中间件 MIDDLEWARE（可以编写配置代码）<ul>
+<li>对请求进行处理  修改丢弃新增请求或响应  Downloader Middleware</li>
+<li>对请求、爬取项再处理 Spider  Middleware</li>
+</ul>
+</li>
+</ul>
+<h3 id="数据路径"><a href="#数据路径" class="headerlink" title="==数据路径=="></a>==数据路径==</h3><p><img src="/Users/ISEM/Documents/pic_for_md/%E7%88%AC%E8%99%AB%E6%A1%86%E6%9E%B6%E7%BB%93%E6%9E%84.png" alt="爬虫框架结构"></p>
+<p>![image-20200609161316475](/Users/ISEM/Library/Application Support/typora-user-images/image-20200609161316475.png)</p>
+<h3 id="VS-Request"><a href="#VS-Request" class="headerlink" title="VS Request"></a>VS Request</h3><ul>
+<li>页面请求和爬取</li>
+<li>均没有处理js、表单、验证码</li>
+<li>网站级 VS 页面级</li>
+<li>框架 VS 功能库</li>
+<li>并发性好 VS 并发性差 （模拟人类，面对反爬，快未必好）</li>
+<li>重在爬虫结构 VS 重点在于页面下载</li>
+<li>深度定制困难 VS 定制灵活</li>
+</ul>
+<h3 id="Scrapy-命令行"><a href="#Scrapy-命令行" class="headerlink" title="Scrapy 命令行"></a>Scrapy 命令行</h3><blockquote>
+<p>scrapy &lt;common&gt; [options ] [args] </p>
+<p>scrapy -h</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>scrapy startproject &lt;name &gt; [dir]</td>
+<td>创建一个新的工程（创建一个文件夹，可有多个爬虫）</td>
+</tr>
+<tr>
+<td>scrapy genspider [option] &lt;name&gt; &lt;domain&gt;</td>
+<td>创建一个爬虫</td>
+</tr>
+<tr>
+<td>scrapy crawl &lt;spider&gt;</td>
+<td>运行一个爬虫</td>
+</tr>
+<tr>
+<td>scrapy settings [option]</td>
+<td>获取爬虫配置信息</td>
+</tr>
+<tr>
+<td>scrapy list</td>
+<td>列出工程中所有爬虫</td>
+</tr>
+<tr>
+<td>scrapy shell [url]</td>
+<td>启动URL调试命令行</td>
+</tr>
+</tbody></table>
+<h3 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h3><ol>
+<li>建立爬虫工程</li>
+<li>在工程中产生一个爬虫</li>
+<li>配置产生的爬虫  ##修改demo.py</li>
+<li>运行爬虫获取网页</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># http://python123.io/ws/demo.html</span></span><br><span class="line"></span><br><span class="line">cd \Desktop</span><br><span class="line">scrapy -h</span><br><span class="line"></span><br><span class="line">scrapy startproject pydemo</span><br><span class="line"><span class="comment"># scrapy.cfg 部署爬虫的配置文件（爬虫置于服务器上；本机爬虫用不到）</span></span><br><span class="line"><span class="comment"># pydemo  框架下的用户自定义python代码 </span></span><br><span class="line"><span class="comment"># __init__.py 初始化脚本</span></span><br><span class="line"><span class="comment"># items.py  Items代码模版(继承scrapy中相应的类，下同)(一般无需修改)</span></span><br><span class="line"><span class="comment"># middlewares.py Middlewares代码模版</span></span><br><span class="line"><span class="comment"># pipelines.py Pipelines代码模版</span></span><br><span class="line"><span class="comment"># settings.py scrapy爬虫的配置文件(优化爬虫功能)</span></span><br><span class="line"><span class="comment"># spiders/ Spider代码模版目录</span></span><br><span class="line"><span class="comment">##       __pycache__/ 缓存目录，无需修改</span></span><br><span class="line"></span><br><span class="line">scrapy genspider demo python123.io </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 爬虫修改</span></span><br><span class="line"><span class="keyword">import</span> scrapy</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoSpider</span><span class="params">(scrapy.Spider)</span>:</span></span><br><span class="line">    name = <span class="string">'demo'</span></span><br><span class="line">    <span class="comment">#allowed_domains = ['python123.io']</span></span><br><span class="line">    start_urls = [<span class="string">'http://python123.io/ws/demo.html'</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">parse</span><span class="params">(self, response)</span>:</span> <span class="comment">#python中，类的方法定义必须，表示类实例本身，非类本身 https://www.cnblogs.com/yibeimingyue/p/11225107.html</span></span><br><span class="line">        fname = response.url.split(<span class="string">'/'</span>)[<span class="number">-1</span>]</span><br><span class="line">        <span class="keyword">with</span> open(fname,<span class="string">'wb'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        	f.write(response.body)</span><br><span class="line">        self.log(<span class="string">'saved file %s.'</span> % name)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/Users/ISEM/Documents/pic_for_md/%E7%AD%89%E4%BB%B7%E7%89%88%E6%9C%AC.png" alt="等价版本"></p>
+<h3 id="生成器-yield"><a href="#生成器-yield" class="headerlink" title="生成器 yield"></a>生成器 yield</h3><p>==生成器==</p>
+<ul>
+<li>不断产生值的函数</li>
+<li>每次产生一个值（yield语句），函数被冻结，唤醒后再次产生一个值（所以要用for循环调用生成器）</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gen</span><span class="params">(n)</span>:</span></span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> range(i):</span><br><span class="line">    yeild i**<span class="number">2</span> <span class="comment">##根据生成器，gen()运行一次就停下，故与for连用如下</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> gen(n):</span><br><span class="line">  print(i,<span class="string">" "</span>,end = <span class="string">""</span>)</span><br></pre></td></tr></table></figure>
+
+<p>![image-20200611162626349](/Users/ISEM/Library/Application Support/typora-user-images/image-20200611162626349.png)</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/技术//" class="article-tag-list-link color3">技术</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/07/12/Python%E7%BD%91%E7%BB%9C%E7%88%AC%E8%99%AB%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
